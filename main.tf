@@ -1,7 +1,6 @@
 provider "aws" {
   region = "us-east-1"  # Update with your desired region
-aws_access_key_id = "AKIA6M3IY72PY52IHCSG"
-aws_secret_access_key = "qrXJnOomZ+gb06hleah6/J0xvyU5vkAdq4Pxjcsy"
+
 
 }
 
