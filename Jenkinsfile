@@ -15,7 +15,7 @@ pipeline {
                  script{
                         dir("terraform")
                         {
-                            git "git@github.com:NatramS/CloudAutomation.git"
+                            git "https://github.com/NatramS/CloudAutomation.git"
                         }
                     }
                 }
