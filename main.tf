@@ -47,6 +47,15 @@ resource "aws_launch_configuration" "web_lc" {
   instance_type   = "t2.micro"  # Update with your desired instance type
   security_groups = [aws_security_group.web_sg.name]
 
+# Provisioner to install web server
+  provisioner "remote-exec" {
+    inline = [
+      "sudo apt-get update",
+      "sudo apt-get install -y apache2"
+      # You can add more commands here if needed
+    ]
+  }
+
   lifecycle {
     create_before_destroy = true
   }
