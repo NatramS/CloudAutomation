@@ -15,7 +15,7 @@ pipeline {
                  script{
                         dir("terraform")
                         {
-                           git branch: 'main', git "https://github.com/NatramS/CloudAutomation.git"
+                           git branch: 'main', url: "https://github.com/NatramS/CloudAutomation.git"
                         }
                     }
                 }
