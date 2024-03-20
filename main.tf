@@ -66,7 +66,7 @@ resource "aws_autoscaling_group" "web_asg" {
   min_size             = 1
   max_size             = 3
   desired_capacity     = 2
-  vpc_zone_identifier  = [aws_subnet.main.id]  # Update with your desired subnet(s)
+  vpc_zone_identifier  = [10.0.0.0/24]  # Update with your desired subnet(s)
 
   tag {
     key                 = "Name"
@@ -81,7 +81,7 @@ resource "aws_lb" "web_lb" {
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.web_sg.id]
-  subnets            = [aws_subnet.main.id]  # Update with your desired subnet(s)
+  subnets            = [10.0.1.0/24]  # Update with your desired subnet(s)
 }
 
 # Create Target Group
