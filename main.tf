@@ -81,7 +81,7 @@ resource "aws_lb" "web_lb" {
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.web_sg.id]
-  subnets            = ["10.0.1.0/24"]  # Update with your desired subnet(s)
+  subnets            = ["subnet-05a9b0f3911ddec7d"]  # Update with your desired subnet(s)
 }
 
 # Create Target Group
