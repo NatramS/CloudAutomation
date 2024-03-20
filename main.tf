@@ -45,7 +45,7 @@ resource "aws_security_group" "web_sg" {
 resource "aws_launch_configuration" "web_lc" {
   image_id          = "ami-0c55b159cbfafe1f0"  # Update with your desired AMI
   instance_type     = "t2.micro"               # Update with your desired instance type
-  security_groups   = [aws_security_group.web_sg.id]
+  security_groups   = [sg-02d61e9f30cc43b3d]
 
   # Provisioner to install web server
   provisioner "remote-exec" {
