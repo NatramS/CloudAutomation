@@ -27,9 +27,9 @@ resource "aws_security_group" "web_sg" {
   vpc_id = aws_vpc.main.id
 
   egress {
-    from_port = 0
-    to_port   = 0
-    protocol  = "-1"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
@@ -43,11 +43,11 @@ resource "aws_security_group" "web_sg" {
 
 # Launch Configuration and Auto Scaling Group
 resource "aws_launch_configuration" "web_lc" {
-  image_id        = "ami-0c55b159cbfafe1f0"  # Update with your desired AMI
-  instance_type   = "t2.micro"  # Update with your desired instance type
-  security_groups = [aws_security_group.web_sg.name]
+  image_id          = "ami-0c55b159cbfafe1f0"  # Update with your desired AMI
+  instance_type     = "t2.micro"               # Update with your desired instance type
+  security_groups   = [aws_security_group.web_sg.id]
 
-# Provisioner to install web server
+  # Provisioner to install web server
   provisioner "remote-exec" {
     inline = [
       "sudo apt-get update",
@@ -66,7 +66,7 @@ resource "aws_autoscaling_group" "web_asg" {
   min_size             = 1
   max_size             = 3
   desired_capacity     = 2
-  vpc_zone_identifier  = [10.0.0.0/24]  # Update with your desired subnet(s)
+  vpc_zone_identifier  = [aws_subnet.main.id]  # Update with your desired subnet(s)
 
   tag {
     key                 = "Name"
@@ -81,7 +81,7 @@ resource "aws_lb" "web_lb" {
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.web_sg.id]
-  subnets            = [10.0.1.0/24]  # Update with your desired subnet(s)
+  subnets            = [aws_subnet.main.id]  # Update with your desired subnet(s)
 }
 
 # Create Target Group
@@ -114,7 +114,7 @@ resource "aws_iam_policy" "webserver_policy" {
   description = "Policy to restart web server"
 
   policy = jsonencode({
-    Version = "2012-10-17",
+    Version   = "2012-10-17",
     Statement = [
       {
         Effect   = "Allow",
