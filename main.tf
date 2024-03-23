@@ -3,28 +3,41 @@ provider "aws" {
 }
 
 # Create VPC
-resource "aws_vpc" "main" {
-  cidr_block = "10.0.0.0/16"  # Update with your desired CIDR
+resource "aws_vpc" "my_vpc" {
+  cidr_block = "10.0.0.0/16"
 }
 
 # Create Internet Gateway
-resource "aws_internet_gateway" "gw" {
-  vpc_id = aws_vpc.main.id
+resource "aws_internet_gateway" "my_igw" {
+  vpc_id = aws_vpc.my_vpc.id
 }
 
 # Create Route Table
-resource "aws_route_table" "route" {
-  vpc_id = aws_vpc.main.id
+resource "aws_route_table" "my_route_table" {
+  vpc_id = aws_vpc.my_vpc.id
 
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.gw.id
+    gateway_id = aws_internet_gateway.my_igw.id
   }
 }
 
+# Associate Route Table with Subnet
+resource "aws_route_table_association" "my_route_table_association" {
+  subnet_id      = aws_subnet.my_subnet.id
+  route_table_id = aws_route_table.my_route_table.id
+}
+
+# Create Subnet
+resource "aws_subnet" "my_subnet" {
+  vpc_id            = aws_vpc.my_vpc.id
+  cidr_block        = "10.0.1.0/24"
+  availability_zone = "us-west-2a"
+}
+
 # Create Security Group
-resource "aws_security_group" "web_sg" {
-  vpc_id = aws_vpc.main.id
+resource "aws_security_group" "my_security_group" {
+  vpc_id = aws_vpc.my_vpc.id
 
   egress {
     from_port   = 0
@@ -41,38 +54,15 @@ resource "aws_security_group" "web_sg" {
   }
 }
 
-# Launch Configuration and Auto Scaling Group
-resource "aws_launch_configuration" "web_lc" {
-  image_id          = "ami-0c55b159cbfafe1f0"  # Update with your desired AMI
-  instance_type     = "t2.micro"               # Update with your desired instance type
-  security_groups   = [aws_security_group.web_sg.name] # Reference the security group by its name
-
-  # Provisioner to install web server
-  provisioner "remote-exec" {
-    inline = [
-      "sudo apt-get update",
-      "sudo apt-get install -y apache2"
-      # You can add more commands here if needed
-    ]
-  }
-
-  lifecycle {
-    create_before_destroy = true
-  }
+# Create IAM User
+resource "aws_iam_user" "web_server_user" {
+  name = "web_server_user"
 }
 
-resource "aws_autoscaling_group" "web_asg" {
-  launch_configuration = aws_launch_configuration.web_lc.name
-  min_size             = 1
-  max_size             = 3
-  desired_capacity     = 2
-  vpc_zone_identifier  = ["10.0.0.0/24"]  # Update with your desired subnet(s)
-
-  tag {
-    key                 = "Name"
-    value               = "web-server"
-    propagate_at_launch = true
-  }
+# Attach Policy to IAM User
+resource "aws_iam_user_policy_attachment" "attach" {
+  user       = aws_iam_user.web_server_user.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2FullAccess"  # Change this policy to the one that grants access to restart the web server
 }
 
 # Create Load Balancer
@@ -80,53 +70,39 @@ resource "aws_lb" "web_lb" {
   name               = "web-lb"
   internal           = false
   load_balancer_type = "application"
-  security_groups    = [aws_security_group.web_sg.id]
-  subnets            = ["subnet-05a9b0f3911ddec7d","subnet-0d7d96ae52df501b3"]  # Update with your desired subnet(s)
+  security_groups    = [aws_security_group.my_security_group.id]
+  subnets            = [aws_subnet.my_subnet.id]  # Update with your desired subnet(s) in different Availability Zones
 }
 
-# Create Target Group
-resource "aws_lb_target_group" "web_target_group" {
-  name     = "web-target-group"
-  port     = 8080
-  protocol = "HTTP"
-  vpc_id   = aws_vpc.main.id
+# Create Auto Scaling Group
+resource "aws_launch_configuration" "web_launch_config" {
+  image_id = "ami-12345678"  # Update with your desired AMI ID
+  instance_type = "t2.micro"
 }
 
-# Create Listener
-resource "aws_lb_listener" "web_listener" {
-  load_balancer_arn = aws_lb.web_lb.arn
-  port              = 80
-  protocol          = "HTTP"
+resource "aws_autoscaling_group" "web_asg" {
+  launch_configuration = aws_launch_configuration.web_launch_config.name
+  min_size             = 1
+  max_size             = 3
+  desired_capacity     = 2
+  vpc_zone_identifier  = [aws_subnet.my_subnet.id]
+}
 
-  default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.web_target_group.arn
+# Create Web Server Instance
+resource "aws_instance" "web_server_instance" {
+  ami             = "ami-12345678"  # Update with your desired AMI ID
+  instance_type   = "t2.micro"
+  subnet_id       = aws_subnet.my_subnet.id
+  security_groups = [aws_security_group.my_security_group.id]
+
+  tags = {
+    Name = "web-server-instance"
   }
-}
 
-# Create IAM User with permission to restart web server
-resource "aws_iam_user" "webserver_user" {
-  name = "webserver-user"
-}
-
-resource "aws_iam_policy" "webserver_policy" {
-  name        = "webserver-policy"
-  description = "Policy to restart web server"
-
-  policy = jsonencode({
-    Version   = "2012-10-17",
-    Statement = [
-      {
-        Effect   = "Allow",
-        Action   = "ec2:RebootInstances",
-        Resource = "*",
-      },
-    ],
-  })
-}
-
-resource "aws_iam_policy_attachment" "webserver_policy_attachment" {
-  name       = "webserver-policy-attachment"
-  users      = [aws_iam_user.webserver_user.name]
-  policy_arn = aws_iam_policy.webserver_policy.arn
+  provisioner "remote-exec" {
+    inline = [
+      "sudo sed -i 's/80/8080/' /etc/httpd/conf/httpd.conf",
+      "sudo systemctl restart httpd"
+    ]
+  }
 }
