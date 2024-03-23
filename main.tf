@@ -100,7 +100,7 @@ resource "aws_autoscaling_group" "web_asg" {
 
 # Create Web Server Instance
 resource "aws_instance" "web_server_instance" {
-  ami             = "ami-12345678"  # Update with your desired AMI ID
+  ami             = "ami-032346ab877c418af"  # Update with your desired AMI ID
   instance_type   = "t2.micro"
   subnet_id       = aws_subnet.my_subnet.id
   security_groups = [aws_security_group.my_security_group.id]
