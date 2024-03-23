@@ -81,7 +81,7 @@ resource "aws_lb" "web_lb" {
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.my_security_group.id]
-  subnets            = [aws_subnet.my_subnet.id, aws_subnet.new_subnet.id]  # Update with your desired subnet(s) in different Availability Zones
+  subnets            = [aws_subnet.my_subnet.id, aws_subnet.my_subnet_01.id]  # Update with your desired subnet(s) in different Availability Zones
 }
 
 # Create Auto Scaling Group
