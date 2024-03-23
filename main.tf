@@ -29,17 +29,22 @@ resource "aws_route_table_association" "my_route_table_association_subnet1" {
 }
 
 resource "aws_route_table_association" "my_route_table_association_subnet2" {
-  subnet_id      = aws_subnet.new_subnet.id
+  subnet_id      = aws_subnet.my_subnet_01.id
   route_table_id = aws_route_table.my_route_table.id
 }
 
 # Create Subnet
 resource "aws_subnet" "my_subnet" {
   vpc_id            = aws_vpc.my_vpc.id
-  cidr_block        = "10.0.1.0/24"
+  cidr_block        = "10.0.0.0/24"
   availability_zone = "us-east-1a"
 }
 
+resource "aws_subnet" "my_subnet_01" {
+  vpc_id            = aws_vpc.my_vpc.id
+  cidr_block        = "10.0.1.0/24"
+  availability_zone = "us-east-1a"
+}
 # Create Security Group
 resource "aws_security_group" "my_security_group" {
   vpc_id = aws_vpc.my_vpc.id
