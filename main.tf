@@ -43,7 +43,7 @@ resource "aws_subnet" "my_subnet" {
 resource "aws_subnet" "my_subnet_01" {
   vpc_id            = aws_vpc.my_vpc.id
   cidr_block        = "10.0.2.0/24"
-  availability_zone = "us-east-1a"
+  availability_zone = "us-east-1b"
 }
 # Create Security Group
 resource "aws_security_group" "my_security_group" {
