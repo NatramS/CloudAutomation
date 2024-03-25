@@ -86,8 +86,8 @@ resource "aws_lb" "web_lb" {
 
 # Create Auto Scaling Group
 resource "aws_launch_configuration" "web_launch_config" {
-  image_id = "ami-12345678"  # Update with your desired AMI ID
-  instance_type = "t2.medium"
+  image_id = "ami-080e1f13689e07408"  # Update with your desired AMI ID
+  instance_type = "t2.micro"
 }
 
 resource "aws_autoscaling_group" "web_asg" {
@@ -100,7 +100,7 @@ resource "aws_autoscaling_group" "web_asg" {
 
 # Create Web Server Instance
 resource "aws_instance" "web_server_instance" {
-  ami             = "ami-032346ab877c418af"  # Update with your desired AMI ID
+  ami             = "ami-080e1f13689e07408"  # Update with your desired AMI ID
   instance_type   = "t2.micro"
   subnet_id       = aws_subnet.my_subnet.id
   security_groups = [aws_security_group.my_security_group.id]
