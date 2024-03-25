@@ -87,7 +87,7 @@ resource "aws_lb" "web_lb" {
 # Create Auto Scaling Group
 resource "aws_launch_configuration" "web_launch_config" {
   image_id = "ami-12345678"  # Update with your desired AMI ID
-  instance_type = "t2.micro"
+  instance_type = "t2.medium"
 }
 
 resource "aws_autoscaling_group" "web_asg" {
