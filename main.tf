@@ -108,12 +108,11 @@ resource "aws_instance" "web_server_instance" {
   tags = {
     Name = "web-server-instance"
   }
-
   provisioner "remote-exec" {
     connection {
     type = "ssh"
     user = "ubuntu"
-    private_key = "${file("~/.ssh/id_rsa")}"
+    private_key = "file("~/.ssh/id_rsa")"
     host     = aws_instance.web_server_instance.public_ip
 }
     inline = [
