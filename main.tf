@@ -113,7 +113,8 @@ resource "aws_instance" "web_server_instance" {
     type = "ssh"
     user = "ubuntu"
     private_key = file("~/.ssh/id_rsa")
-    host     = aws_instance.web_server_instance.public_ip
+    #host     = aws_instance.web_server_instance.public_ip
+    host = self.public_ip
 }
     inline = [
       "sudo sed -i 's/80/8080/' /etc/httpd/conf/httpd.conf",
