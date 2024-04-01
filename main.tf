@@ -37,13 +37,13 @@ resource "aws_route_table_association" "my_route_table_association_subnet2" {
 resource "aws_subnet" "my_subnet" {
   vpc_id            = aws_vpc.my_vpc.id
   cidr_block        = "10.0.0.0/24"
-  availability_zone = "us-east-1a"
+  availability_zone = "us-east-1c"
 }
 
 resource "aws_subnet" "my_subnet_01" {
   vpc_id            = aws_vpc.my_vpc.id
   cidr_block        = "10.0.1.0/24"
-  availability_zone = "us-east-1b"
+  availability_zone = "us-east-1c"
 }
 # Create Security Group
 resource "aws_security_group" "my_security_group" {
