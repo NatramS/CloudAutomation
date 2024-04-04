@@ -126,7 +126,7 @@ resource "aws_instance" "web_server_instance" {
 connection {
     type        = "ssh"
     user        = "ubuntu"  # Update with appropriate SSH user based on AMI
-    private_key = file("/path/to/your/private/key.pem")  # Update with the path to your private key
+    private_key = file("~/.ssh/my-key.pem")  # Update with the path to your private key
     host        = self.public_ip  # Assuming you want to connect using the public IP
   }
   provisioner "remote-exec" {
