@@ -131,3 +131,12 @@ resource "aws_instance" "web_server_instance" {
     ]
   }
 }
+
+# Output Public and Private IP addresses of instances
+output "web_server_instance_public_ip" {
+  value = aws_instance.web_server_instance.public_ip
+}
+
+output "web_server_instance_private_ip" {
+  value = aws_instance.web_server_instance.private_ip
+}
