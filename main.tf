@@ -123,7 +123,12 @@ resource "aws_instance" "web_server_instance" {
   tags = {
     Name = "web-server-instance"
   }
-
+connection {
+    type        = "ssh"
+    user        = "ubuntu"  # Update with appropriate SSH user based on AMI
+    private_key = file("/path/to/your/private/key.pem")  # Update with the path to your private key
+    host        = self.public_ip  # Assuming you want to connect using the public IP
+  }
   provisioner "remote-exec" {
     inline = [
       "sudo sed -i 's/80/8080/' /etc/httpd/conf/httpd.conf",
