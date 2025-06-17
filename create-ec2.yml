@@ -1,0 +1,13 @@
+- name: Launch EC2
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  tasks:
+    - name: Launch EC2 instance
+      amazon.aws.ec2_instance:
+        name: myInstance
+        key_name: my-key
+        region: us-east-1
+        instance_type: t2.micro
+        image_id: ami-0abcdef1234567890
+        wait: yes
