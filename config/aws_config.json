@@ -1,0 +1,15 @@
+{
+  "region": "us-east-1",
+  "ec2": {
+    "instance_type": "t2.micro",
+    "ami_id": "ami-0abcdef1234567890",
+    "key_name": "my-key-pair"
+  },
+  "s3": {
+    "bucket_name": "my-automated-bucket"
+  },
+  "iam": {
+    "role_name": "MyAutomationRole",
+    "policy_name": "MyAutomationPolicy"
+  }
+}
